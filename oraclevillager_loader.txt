@@ -1,0 +1,88 @@
+import simplegui
+import urllib.request
+import codeskulptor
+
+import random
+
+def loadCSVFile(url, onEach=None, includeHeaders=False) :
+    
+    form = []
+    a_file = urllib.request.urlopen(url)
+    lines = str(a_file.read()).replace("\\r","")[2:-1].split("\\n")
+    if (not includeHeaders) : 
+        lines = lines[1:]
+    for line in lines :
+        values = line.split(",")
+        if (onEach != None) :
+            onEach(values)
+            
+        form.append(values)
+    
+    return form
+    
+class Oracle :
+
+    def __init__(self, name, region, occupation, favoriteFood, travel, age, tribe, hobby) :
+        self.name = name
+        self.region = region
+        self.occupation = occupation
+        self.favoriteFood = favoriteFood
+        self.travel = travel
+        
+        self.age = age
+        self.tribe = tribe
+        self.hobby = hobby
+        
+        self.isOracle = False
+        
+class Villager :
+    
+    def __init__(self, region=None) :
+        self.name = random.choice(qualities["names"])
+        if (region == None) :
+            self.region = random.choice(qualities["regions"])
+        else :
+            self.region = region
+        self.occupation = random.choice(qualities["occupations"])
+        self.favoriteFood = random.choice(qualities["favoriteFoods"])
+        self.travel = random.choice(qualities["travels"])
+        
+        self.age = random.choice(qualities["ages"])
+        self.tribe = random.choice(qualities["tribes"])
+        self.hobby = random.choice(qualities["hobbies"])
+        
+    def __str__(self) :
+        return self.name + "," + self.region + "," + self.occupation + "," + self.favoriteFood + "," + self.travel + "," + self.age + "," + self.tribe + "," + self.hobby
+def onEach(values) :
+    global oracles, qualities
+    
+    for i in range(len(values) - 2) :
+        qualities[qualityCategories[i]].append(values[i + 2])
+    oracles.append(Oracle(values[2],values[3],values[4],values[5],values[6],values[7],values[8],values[9]))
+    
+def generateOracles() :
+    
+    global oracles
+    
+    oracles = []
+    loadCSVFile("https://williamrat12.github.io/Name of the Oracle - NPC Data.csv",onEach)
+    
+def generateVillagers(numVillagers) :
+    
+    global villagers
+    
+    villagers = []
+    
+    for i in range(numVillagers) :
+        villagers.append(Villager())
+        
+    for v in villagers :
+        print(v)
+    
+oracles = []
+villagers = []
+qualityCategories = ["names","regions","occupations","favoriteFoods","travels","ages","tribes","hobbies"]
+qualities = {qualityCategories[0]:[],qualityCategories[1]:[],qualityCategories[2]:[],qualityCategories[3]:[],qualityCategories[4]:[],qualityCategories[5]:[],qualityCategories[6]:[],qualityCategories[7]:[]}
+
+generateOracles()
+generateVillagers(100)
